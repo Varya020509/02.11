@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <title>Упс</title>
+</head>
+<body style="text-align: center; font-family: monospace; background-color: #f4f4f9;">
+    <h1 style="font-size: 70px; margin-top: 5vh; font-family: Impact, sans-serif; color: red;"><b>еее</b></h1>
+    
+    <div style="margin: 20px 0;">
+        <img src="/static/1.jpg" alt="Ха-ха" style="max-width: 400px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.2);">
+    </div>
+
+    <div style="font-size: 20px; width: 300px; margin: 0 auto; border: 1px solid #ccc; padding: 20px; background: white; text-align: left;">
+        <p><b>Твой IP:</b> {{ ip }}</p>
+        <p><b>Логин:</b> {{ name }}</p>
+        <p><b>Почта:</b> {{ email }}</p>
+        <p><b>Пароль (хэш):</b> <span style="word-break: break-all;">{{ password }}</span></p>
+        <p><b>Твой баланс:</b> {{ balance }}</p>
+    </div>
+</body>
+</html>

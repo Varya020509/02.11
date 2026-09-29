@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Вход в систему</title>
+    <script src="https://jquery.com"></script>
+    <script src="{{ url_for('static', filename='script.js') }}?v=1.1"></script>
+    <style>
+        body { font-family: Arial, sans-serif; background: #f4f4f9; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .form-container { background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); width: 300px; }
+        h2 { text-align: center; margin-bottom: 20px; color: #333; }
+        input { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+        button { width: 100%; padding: 10px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; }
+        button:hover { background: #0069d9; }
+        .link { text-align: center; margin-top: 15px; display: block; color: #28a745; text-decoration: none; }
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <h2>Вход в систему</h2>
+        <form id="login_form">
+            <input type="email" id="login_email" placeholder="Логин или Email" required>
+            <input type="password" id="login_password" placeholder="Пароль" required>
+            <button type="submit">Войти</button>
+        </form>
+        <a href="/" class="link">Нет аккаунта? Зарегистрироваться</a>
+    </div>
+</body>
+</html>
