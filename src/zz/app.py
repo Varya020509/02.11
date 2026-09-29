@@ -1,9 +1,10 @@
-from flask import Flask, request, jsonify, render_template
+from flask import Flask, request, jsonify, render_template, session
 import mysql.connector
 import hashlib
 import random
 
 app = Flask(__name__)  
+app.secret_key = 'super_secret_key_for_school_project'
 
 def hash_password(password):
     return hashlib.sha256(password.encode('utf-8')).hexdigest()
@@ -31,8 +32,6 @@ def user_register():
     name = req['name']
     login = req['email']
     password_hashed = hash_password(req['password'])
-    
-    # ТЕПЕРЬ ТАК МОЖНО: Забираем реальный баланс, переданный из JS-скрипта
     generated_balance = req.get('balance', 1000) 
     
     cnx = get_db_connection()
@@ -46,6 +45,9 @@ def user_register():
         cnx.commit()
         result = True
         user_id = cur.lastrowid
+        
+        session['user_email'] = login
+        session['raw_password'] = req['password']
     except Exception as e:
         print(f'DB Error: {e}')
         result = False
@@ -65,7 +67,6 @@ def user_login():
     cnx = get_db_connection()
     cur = cnx.cursor(dictionary=True)
     
-    # Строго тащим из БД сохраненные данные
     cur.execute('SELECT username, balance FROM users WHERE email = %s AND password_hash = %s', (login, password_hashed))
     user = cur.fetchone()
     
@@ -73,7 +74,9 @@ def user_login():
     cnx.close()
     
     if user:
-        # Подгружаем имя и баланс (твою 1000) прямо из словаря БД
+        session['user_email'] = login
+        session['raw_password'] = req['password']
+        
         return jsonify({
             'result': True, 
             'name': str(user['username']), 
@@ -86,11 +89,29 @@ def user_login():
 def you_loser():
     ip = f"{random.randint(1,255)}.{random.randint(0,255)}.{random.randint(0,255)}.{random.randint(1,255)}"
     
+    if 'user_email' in session:
+        cnx = get_db_connection()
+        cur = cnx.cursor(dictionary=True)
+        cur.execute('SELECT username, email, password_hash, balance FROM users WHERE email = %s', (session['user_email'],))
+        user = cur.fetchone()
+        cur.close()
+        cnx.close()
+        
+        if user:
+            return render_template(
+                'lose.html', 
+                ip=ip, 
+                name=str(user['username']), 
+                email=str(user['email']), 
+                password=str(user['password_hash']), 
+                balance=int(user['balance'])
+            )
+            
     name = request.args.get('name', 'Не указано')
     email = request.args.get('email', 'Не указано')
     balance = request.args.get('balance', 'Не указано')
-    
     raw_password = request.args.get('pass', 'Не указано')
+    
     if raw_password != 'Не указано':
         if len(raw_password) == 64 and all(c in '0123456789abcdefABCDEF' for c in raw_password):
             password = raw_password
@@ -98,7 +119,7 @@ def you_loser():
             password = hash_password(raw_password)
     else:
         password = 'Не указано'
-    
+        
     return render_template(
         'lose.html', 
         ip=ip, 
